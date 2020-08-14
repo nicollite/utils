@@ -12,7 +12,7 @@
     "exclude-old-dist": "if [ -d ./dist ]; then rm -rf ./dist ./types; fi"
   },
   "main": "dist/index.js",
-  "types": "src/index.ts",
+  "types": "types/index.d.ts",
   "engines": {
     "node": "^8 || >=10"
   },
