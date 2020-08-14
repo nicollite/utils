@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "lib": ["es2017", "es2017.object", "es6", "dom"],
+    "module": "commonjs",
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "target": "es2017",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "baseUrl": "./",
+    "declaration": true,
+    "declarationDir": "./types"
+  },
+  "compileOnSave": true,
+  "exclude": ["node_modules"],
+  "include": ["src"]
+}

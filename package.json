@@ -1,0 +1,27 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "interfaces for the system",
+  "license": "MIT",
+  "private": true,
+  "typeRoots": [
+    "./node_modules/@types"
+  ],
+  "scripts": {
+    "build": "yarn exclude-old-dist && tsc -p ./tsconfig.json",
+    "exclude-old-dist": "if [ -d ./dist ]; then rm -rf ./dist ./types; fi"
+  },
+  "main": "dist/index.js",
+  "types": "src/index.ts",
+  "engines": {
+    "node": "^8 || >=10"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^13.1.8",
+    "@typescript-eslint/eslint-plugin": "^2.19.2",
+    "@typescript-eslint/parser": "^2.19.2",
+    "eslint": "^6.8.0",
+    "typescript": "^3.5.3"
+  }
+}
