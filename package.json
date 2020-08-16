@@ -1,27 +1,45 @@
 {
-  "name": "shared",
+  "name": "@nicollite/utils",
+  "description": "A package with utility functions",
   "version": "1.0.0",
-  "description": "interfaces for the system",
   "license": "MIT",
-  "private": true,
-  "typeRoots": [
-    "./node_modules/@types"
+  "private": false,
+  "keywords": [
+    "utils"
   ],
+  "author": {
+    "name": "Nicolas Conte",
+    "email": "nickconte70@gmail.com"
+  },
   "scripts": {
-    "build": "yarn exclude-old-dist && tsc -p ./tsconfig.json",
-    "exclude-old-dist": "if [ -d ./dist ]; then rm -rf ./dist ./types; fi"
+    "build": "npm run exclude-old-dist && tsc -p ./tsconfig.json",
+    "exclude-old-dist": "if [ -d ./dist ]; then rm -rf ./dist ./types; fi",
+    "prepare": "npm run build",
+    "prepublish": "npm run build",
+    "test": "jest"
   },
   "main": "dist/index.js",
-  "types": "src/index.ts",
+  "types": "types/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "types/**/*"
+  ],
   "engines": {
     "node": "^8 || >=10"
   },
-  "dependencies": {},
+  "homepage": "https://github.com/nicollite/utils#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicollite/utils.git"
+  },
   "devDependencies": {
+    "@types/jest": "^26.0.10",
     "@types/node": "^13.1.8",
     "@typescript-eslint/eslint-plugin": "^2.19.2",
     "@typescript-eslint/parser": "^2.19.2",
     "eslint": "^6.8.0",
+    "jest": "^26.4.0",
+    "ts-jest": "^26.2.0",
     "typescript": "^3.5.3"
   }
 }

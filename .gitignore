@@ -1,6 +1,12 @@
 # Ignore build folders
-/dist
-/types
+dist/
+types/
 
 # Ignore node_modules
-/node_modules
+node_modules/
+
+# Ignore jest coverage
+coverage/
+
+# Ignore log files
+yarn-error.log
