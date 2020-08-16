@@ -23,7 +23,7 @@ export interface ArraysOptions {
  * const arr1 = [1,2,3,4,5]
  * const arr2 = [4,5,6,7,8]
  *
- * getArraysDifference(arr1,arr2)
+ * arraysDifference(arr1,arr2)
  * // [6,7,8]
  *
  * @example
@@ -31,7 +31,7 @@ export interface ArraysOptions {
  * const arr1 = [{ x:1 },{ x:2 },{ x:3 }]
  * const arr2 = [{ x:3 },{ x:4 },{ x:5 }]
  *
- * getArraysDifference(arr1,arr2, { path: "x" })
+ * arraysDifference(arr1,arr2, { path: "x" })
  * // [{ x:4 }, { x:5 }]
  *
  * @example
@@ -39,7 +39,7 @@ export interface ArraysOptions {
  * const arr1 = [{ x:1 },{ x:2 },{ x:3 }]
  * const arr2 = [{ y: { x:3 } },{ y: { x:4 } },{ y: { x:5 } }]
  *
- * getArraysDifference(arr1,arr2, { path: "x", path2: "y.x" })
+ * arraysDifference(arr1,arr2, { path: "x", path2: "y.x" })
  * // [{ y: { x:4 } },{ y: { x:5 } }]
  *
  * @returns The itens in arr2 that is not in arr1
@@ -56,18 +56,18 @@ export function arraysDifference<T = any, S = T>(
   // One path function uses "path" to iterate in the object in both arrays
   const onePathDiff = (array1, array2) =>
     array2.filter((obj2) =>
-      array1.some((obj1) => iterateThrowObj(obj1, path) !== iterateThrowObj(obj2, path))
+      array1.every((obj1) => iterateThrowObj(obj1, path) !== iterateThrowObj(obj2, path))
     );
   // One path function uses "path" for array1 and path2 for array2 to iterate in the object in both arrays
   const twoPathDiff = (array1, array2) =>
     array2.filter((obj2) =>
-      array1.some((obj1) => iterateThrowObj(obj1, path) !== iterateThrowObj(obj2, path2))
+      array1.every((obj1) => iterateThrowObj(obj1, path) !== iterateThrowObj(obj2, path2))
     );
 
   // Use the appropriaded diff function
   if (!path && !path2) return includeDiff(arr1, arr2);
   else if (path && !path2) return onePathDiff(arr1, arr2);
-  else if (path && path2) return twoPathDiff(arr1, arr2);
+  return twoPathDiff(arr1, arr2);
 }
 
 /**
@@ -83,7 +83,7 @@ export function arraysDifference<T = any, S = T>(
  * const arr1 = [1,2,3,4,5]
  * const arr2 = [4,5,6,7,8]
  *
- * getArraysDifference(arr1,arr2)
+ * arraysIntersection(arr1,arr2)
  * // [4,5]
  *
  * @example
@@ -91,7 +91,7 @@ export function arraysDifference<T = any, S = T>(
  * const arr1 = [{ x:1 },{ x:2 },{ x:3 }]
  * const arr2 = [{ x:3 },{ x:4 },{ x:5 }]
  *
- * getArraysDifference(arr1,arr2, { path: "x" })
+ * arraysIntersection(arr1,arr2, { path: "x" })
  * // [{ x:3 }]
  *
  * @example
@@ -99,7 +99,7 @@ export function arraysDifference<T = any, S = T>(
  * const arr1 = [{ x:1 },{ x:2 },{ x:3 }]
  * const arr2 = [{ y: { x:3 } },{ y: { x:4 } },{ y: { x:5 } }]
  *
- * getArraysDifference(arr1,arr2, { path: "x", path2: "y.x" })
+ * arraysIntersection(arr1,arr2, { path: "x", path2: "y.x" })
  * // [{ y: { x:3 } }]
  *
  * @returns The itens in arr2 that is not in arr1
@@ -127,7 +127,7 @@ export function arraysIntersection<T = any, S = T>(
   // Use the appropriaded diff function
   if (!path && !path2) return includeIntersect(arr1, arr2);
   else if (path && !path2) return onePathIntersect(arr1, arr2);
-  else if (path && path2) return twoPathIntersect(arr1, arr2);
+  return twoPathIntersect(arr1, arr2);
 }
 
 /**
@@ -142,7 +142,7 @@ export function removeRepeat<T = any>(arr: T[], path: string | string[] = ""): T
   // Get a new array and it's length
   const newArr = arr.concat();
   const len = newArr.length;
-  for (let i = 0; i < len; i++) {
+  for (let i = len; i > 0; i--) {
     // Filter the array with the value
     const value = iterateThrowObj(newArr[i], path);
     const filterdArr = newArr.filter((item) => iterateThrowObj(item, path) === value);
@@ -169,8 +169,11 @@ export function sliceArray<T = any>(arr: T[], sliceLen: number): T[][] {
  * Flat one level deep of and array of arrays
  * @param arr The array that will be flatted
  */
-export function flatArray<T = any>(arr: T[][]): T[] {
-  return arr.reduce((acc, val) => acc.concat(val), []);
+export function flatArray<T = any>(arr: T[][]): T[];
+export function flatArray<T = any>(arr: (T | T[])[]): T[];
+export function flatArray(arr: any[]): any[];
+export function flatArray<T = any>(arr: (T | T[])[]): T[] {
+  return arr.reduce((acc: any[], val) => acc.concat(val), []);
 }
 
 /**
