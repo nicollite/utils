@@ -172,3 +172,36 @@ export function getObjectRef<T = any>(obj: T): T {
   });
   return ref;
 }
+
+/**
+ * Recursively check if the given values are equal, this function can compare objects deeply nested
+ *  The following restrictions are applied:
+ * - For `Date` object the valueOf() method is used to compare the Unix Timestamp.
+ * - For `Function` just check if both values has the typeof "functions".
+ * - `Object` and `Array` values are checked recursively in each key.
+ * - Other types are check with "==="
+ *
+ * @param v1 The first value to compare
+ * @param v2 The second value to compare
+ *
+ * @returns A boolean that indicates if the valeus is the same
+ */
+export function isEqual(v1: any, v2: any): boolean {
+  // Check if the v1 and v2 are not objects like
+  if (!is(v1, "objectLike") && !is(v2, "objectLike")) {
+    // Compare if the typeof are the same, then compare if the values are the same
+    if (typeof v1 !== typeof v2) return false;
+    // For function types return true
+    else if (typeof v1 === "function" && typeof v2 === "function") return true;
+    else return v1 === v2;
+  }
+
+  // Compare dates
+  if (is(v1, "date") && !is(v2, "date")) return false;
+  else if (is(v2, "date")) return v1.valueOf() === v2.valueOf();
+
+  // Compare objects recursively
+  for (const key of Object.keys(v1)) if (!isEqual(v1[key], v2[key])) return false;
+
+  return true;
+}
