@@ -1,6 +1,19 @@
-import { TypeOf } from "./utils";
-
 // Other functions
+
+/** Every javascript primitive type and aditional instance types */
+export type TypeOf =
+  | "boolean"
+  | "function"
+  | "number"
+  | "string"
+  | "undefined"
+  | "bigint"
+  | "symbol"
+  | "object"
+  | "objectLike"
+  | "null"
+  | "array"
+  | "date";
 
 /**
  * Receives a value and check if it is of the type
@@ -16,6 +29,7 @@ export function is(value: any, type: "undefined"): value is undefined;
 export function is(value: any, type: "bigint"): value is bigint;
 export function is(value: any, type: "symbol"): value is symbol;
 export function is(value: any, type: "object"): value is object;
+export function is(value: any, type: "objectLike"): value is object;
 export function is(value: any, type: "null"): value is null;
 export function is(value: any, type: "array"): value is any[];
 export function is(value: any, type: "date"): value is Date;
@@ -26,9 +40,16 @@ export function is(value: any, type: TypeOf): boolean {
   if (type === "null") return value === null;
   if (type === "date") return value instanceof Date;
 
+  // Check type for objectLike
+  if (type === "objectLike")
+    if (value !== null && typeof value === "object") return true;
+    else return false;
+
+  // Return false if type isn't "array", "null", "date" or "objectLike"
+  if (value === null || Array.isArray(value) || value instanceof Date) return false;
+
   // If type is object check if it's not null, an array or date
-  if (type === "object" && (value === null || Array.isArray(value) || value instanceof Date))
-    return false;
+  if (type === "object") return typeof value === "object";
 
   //Set all types
   const types: TypeOf[] = [
@@ -39,7 +60,6 @@ export function is(value: any, type: TypeOf): boolean {
     "undefined",
     "bigint",
     "symbol",
-    "object",
   ];
 
   //Remove the selected type from the array

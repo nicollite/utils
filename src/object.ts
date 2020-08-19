@@ -2,6 +2,10 @@ import { is } from "./others";
 
 // Function for object manipulation
 
+interface ObjectLike {
+  [key: string]: any;
+}
+
 /**
  * Iterate throw an object and return the value within the given path
  * @param obj the object that will be iterate
@@ -28,39 +32,36 @@ export function iterateThrowObj<T = any, S = any>(obj: T, paths?: string | strin
  * Receives the data and the object and insert the data values in the object
  * @param data The data to be setted
  * @param obj The object to set the data
- * @param key If data isn't an object data with be setted in this key on `obj`
+ * @param options
  *
  * @returns A new object with the data values inserted
  */
-export function setDataInObject(data: any, obj: any = {}, key?: string): any {
-  if (!is(data, "object")) {
-    if (!key) throw new Error("key argument must be provided to set a data that is not a object");
-    obj[key] = data;
-    return obj;
-  }
+export function setDataInObject(data: ObjectLike, obj: ObjectLike): ObjectLike {
+  // Get a reference of the object
+  const newObj = getObjectRef(obj);
+  // Get the all paths in data obj to set the data in each
+  const dataObjPaths = getObjectPaths(data);
 
-  Object.entries(data).forEach(([key, value]) => {
-    // Check if value is a object
-    if (is(value, "object")) {
-      // if obj in position key isn't a object set it as an object
-      if (!is(obj[key], "object")) obj[key] = {};
+  // For all paths
+  Object.entries(dataObjPaths).forEach(([dotPaths, value]) => {
+    // Get a array with the paths and pop the last path
+    const paths = dotPaths.split(".");
+    const lastPath = paths.pop();
 
-      obj[key] = setDataInObject(value, obj[key], key);
-    } else {
-      obj[key] = value;
-    }
+    // Set a iterator to go throw all the paths in the object
+    let pathIterator = newObj;
+    paths.forEach((pathKey) => {
+      // If the path is not a object like set a object
+      if (!is(pathIterator[pathKey], "objectLike")) pathIterator[pathKey] = {};
+      // Go to the next path
+      pathIterator = pathIterator[pathKey];
+    });
+
+    // Set the value in the last path
+    pathIterator[lastPath] = value;
   });
 
-  return obj;
-}
-
-/**
- * Log the received avoid the reference
- * @param obj Object that will be logged
- * @param msg Message that appears before the object
- */
-export function logObj(obj?: any): void {
-  console.log(getObjectRef(obj));
+  return newObj;
 }
 
 /**
@@ -71,10 +72,11 @@ export function logObj(obj?: any): void {
  * const obj = {
  *  a: 1,
  *  b: {
- *    c: [1,2,3]
+ *    c: [1,2,3],
  *    d: {
  *      e: "str"
  *    }
+ *    f: null
  *  }
  * }
  *
@@ -85,12 +87,13 @@ export function logObj(obj?: any): void {
  * //   "b.c.0": 1,
  * //   "b.c.1": 2,
  * //   "b.c.2": 3,
- * //   "b.d.e": "str"
+ * //   "b.d.e": "str",
+ * //   "b.f": null
  * // }
  *
  * @returns A flat object with the paths on the keys with a dot separated string
  */
-export function getObjectPaths(obj: object): object {
+export function getObjectPaths(obj: ObjectLike): ObjectLike {
   // Set the new flat object
   let newObj = {};
 
@@ -120,24 +123,23 @@ export function getObjectPaths(obj: object): object {
  */
 export function caculateFirstoreFieldSize(obj: any): number {
   let sum: number = 0;
-  for (let field in obj) {
+  // for (let field in obj) {
+  Object.entries(obj).forEach(([key, value]) => {
     // Sum the field name and the value inside
-    sum += is(obj, "array") ? 0 : field.length + 1;
+    sum += is(value, "array") ? 0 : key.length + 1;
     sum +=
-      obj[field] instanceof Date
+      value instanceof Date
         ? 8
-        : is(obj[field], "array") || is(obj[field], "object")
-        ? caculateFirstoreFieldSize(obj[field])
-        : is(obj[field], "boolean")
+        : is(value, "array") || is(value, "object")
+        ? caculateFirstoreFieldSize(value)
+        : is(value, "boolean")
         ? 1
-        : is(obj[field], "number")
+        : is(value, "number")
         ? 8
-        : is(obj[field], "null")
+        : is(value, "null")
         ? 1
-        : is(obj[field], "string")
-        ? obj[field].length + 1
-        : 0;
-  }
+        : (value as string).length + 1;
+  });
   return sum;
 }
 
@@ -147,10 +149,6 @@ export function caculateFirstoreFieldSize(obj: any): number {
  */
 export const instanceName = (obj: any): string => obj.constructor.name;
 
-export function isObjectOrArray(obj: any): boolean {
-  return is(obj, "object") && is(obj, "array");
-}
-
 /**
  * Create a reference for the given with object coping the data inside it
  * and removing
@@ -158,16 +156,18 @@ export function isObjectOrArray(obj: any): boolean {
  * @returns A copy of the given object
  */
 export function getObjectRef<T = any>(obj: T): T {
-  // If obj is not an array or object return the value
-  if (!is(obj, "object") && !is(obj, "array")) return obj;
+  // If obj isn't a object like return the value
+  if (!is(obj, "objectLike")) return obj;
+
   // If it's an array return a recurcive map of the values inside
-  if (is(obj, "array")) {
-    return (obj as any).concat().map((item) => getObjectRef(item)) as any;
-  }
+  if (is(obj, "array")) return (obj as any).concat().map((item) => getObjectRef(item)) as any;
+
+  // If it's a date return a new date
+  if (is(obj, "date")) return new Date(obj.valueOf()) as any;
+
   // If obj is a object create a reference and iterate on each property
   const ref = Object.assign({}, obj);
   Object.entries(ref).forEach(([key, value]) => {
-    if (!is(value, "object") && !is(value, "array")) return;
     ref[key] = getObjectRef(value);
   });
   return ref;
@@ -197,11 +197,24 @@ export function isEqual(v1: any, v2: any): boolean {
   }
 
   // Compare dates
-  if (is(v1, "date") && !is(v2, "date")) return false;
-  else if (is(v2, "date")) return v1.valueOf() === v2.valueOf();
+  if (is(v1, "date") && is(v2, "date")) return v1.valueOf() === v2.valueOf();
+  else if ((is(v1, "date") && !is(v2, "date")) || (!is(v1, "date") && is(v2, "date"))) return false;
 
-  // Compare objects recursively
-  for (const key of Object.keys(v1)) if (!isEqual(v1[key], v2[key])) return false;
+  // Get the keys of each object
+  const obj1Key = Object.keys(v1);
+  const obj2Key = Object.keys(v2);
+
+  if (obj1Key.length !== obj2Key.length) return false;
+
+  // Check if every key in each object exists in the other
+  const obj1KeysInObj2 = obj1Key.every((key1) => obj2Key.some((key2) => key2 === key1));
+  const obj2KeysInObj1 = obj2Key.every((key1) => obj2Key.some((key2) => key2 === key1));
+  if (!obj1KeysInObj2 || !obj2KeysInObj1) return false;
+
+  // If the keys are equals compare the objects recursively
+  for (const key of Object.keys(v1)) {
+    if (!isEqual(v1[key], v2[key])) return false;
+  }
 
   return true;
 }

@@ -2,10 +2,9 @@
 
 /**
  * Text reducer based on number of chars
- * @param text
- * @param numberOfChar
- *
- * @returns Reduced string with ... in the end
+ * @param text The text to be reduced
+ * @param numberOfChar The number of characters to preserve of the reduced string
+ * @returns The reduced string with ... in the end
  */
 export function reduceText(text: string, numberOfChar: number): string {
   if (text.length > numberOfChar) return `${text.substr(0, numberOfChar)}...`;
@@ -14,7 +13,8 @@ export function reduceText(text: string, numberOfChar: number): string {
 
 /**
  * Auto generate an id
- * @param length The length of the id string
+ * @param length The length of the id string. Default is 20
+ * @returns A string representing a generated id
  */
 export function autoId(length: number = 20): string {
   // Validate length

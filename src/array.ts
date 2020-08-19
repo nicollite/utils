@@ -1,4 +1,4 @@
-import { iterateThrowObj } from "./utils";
+import { iterateThrowObj } from "./object";
 
 // Functions for array manipulation
 
