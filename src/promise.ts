@@ -41,7 +41,7 @@ export async function delay(ms: number, value?: any): Promise<void> {
 // ): Promise<T>;
 export async function retry<T = any>(
   retryFn: () => Promise<T> | T,
-  options: RetryOptions = {}
+  options: RetryOptions = {},
 ): Promise<T> {
   const defautlOnError = (err: any) => {
     console.log("Limit of retry achieved");

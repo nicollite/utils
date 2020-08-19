@@ -27,7 +27,7 @@ describe("test autoId function", () => {
       .every(
         (char) =>
           (char.charCodeAt(0) >= 65 && char.charCodeAt(0) <= 122) ||
-          (char.charCodeAt(0) >= 48 && char.charCodeAt(0) <= 57)
+          (char.charCodeAt(0) >= 48 && char.charCodeAt(0) <= 57),
       );
     expect(testCharCodes).toBeTruthy();
   });

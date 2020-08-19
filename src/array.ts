@@ -47,7 +47,7 @@ export interface ArraysOptions {
 export function arraysDifference<T = any, S = T>(
   arr1: T[],
   arr2: S[],
-  options: ArraysOptions = {}
+  options: ArraysOptions = {},
 ): T[] | S[] {
   const { path, path2 } = options;
 
@@ -56,12 +56,12 @@ export function arraysDifference<T = any, S = T>(
   // One path function uses "path" to iterate in the object in both arrays
   const onePathDiff = (array1, array2) =>
     array2.filter((obj2) =>
-      array1.every((obj1) => iterateThrowObj(obj1, path) !== iterateThrowObj(obj2, path))
+      array1.every((obj1) => iterateThrowObj(obj1, path) !== iterateThrowObj(obj2, path)),
     );
   // One path function uses "path" for array1 and path2 for array2 to iterate in the object in both arrays
   const twoPathDiff = (array1, array2) =>
     array2.filter((obj2) =>
-      array1.every((obj1) => iterateThrowObj(obj1, path) !== iterateThrowObj(obj2, path2))
+      array1.every((obj1) => iterateThrowObj(obj1, path) !== iterateThrowObj(obj2, path2)),
     );
 
   // Use the appropriaded diff function
@@ -107,7 +107,7 @@ export function arraysDifference<T = any, S = T>(
 export function arraysIntersection<T = any, S = T>(
   arr1: T[],
   arr2: S[],
-  options: ArraysOptions = {}
+  options: ArraysOptions = {},
 ): T[] | S[] {
   const { path, path2 } = options;
 
@@ -116,12 +116,12 @@ export function arraysIntersection<T = any, S = T>(
   // One path function uses "path" to iterate in the object in both arrays
   const onePathIntersect = (array1, array2) =>
     array2.filter((obj2) =>
-      array1.some((obj1) => iterateThrowObj(obj1, path) === iterateThrowObj(obj2, path))
+      array1.some((obj1) => iterateThrowObj(obj1, path) === iterateThrowObj(obj2, path)),
     );
   // One path function uses "path" for array1 and path2 for array2 to iterate in the object in both arrays
   const twoPathIntersect = (array1, array2) =>
     array2.filter((obj2) =>
-      array1.some((obj1) => iterateThrowObj(obj1, path) === iterateThrowObj(obj2, path2))
+      array1.some((obj1) => iterateThrowObj(obj1, path) === iterateThrowObj(obj2, path2)),
     );
 
   // Use the appropriaded diff function
@@ -183,7 +183,7 @@ export function flatArray<T = any>(arr: (T | T[])[]): T[] {
 export function flattenDeep<T = any>(arr: any[]): T[] {
   return arr.reduce(
     (acc, val) => (Array.isArray(val) ? acc.concat(flattenDeep(val)) : acc.concat(val)),
-    []
+    [],
   );
 }
 
@@ -202,7 +202,7 @@ export function sortArray<T = any>(arr: T[], path: string | string[] = "", rever
         ? -1
         : iterateThrowObj(a, path) < iterateThrowObj(b, path)
         ? 1
-        : 0
+        : 0,
     );
 
   return arr.sort((a, b) =>
@@ -210,7 +210,7 @@ export function sortArray<T = any>(arr: T[], path: string | string[] = "", rever
       ? -1
       : iterateThrowObj(a, path) > iterateThrowObj(b, path)
       ? 1
-      : 0
+      : 0,
   );
 }
 

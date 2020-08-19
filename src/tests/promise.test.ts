@@ -42,7 +42,9 @@ describe("test retry function", () => {
       return { data: "value" };
     });
 
-    expect(await retry(retryFn, { logRetry: false })).toEqual({ data: "value" });
+    expect(await retry(retryFn, { logRetry: false })).toEqual({
+      data: "value",
+    });
     expect(retryFn).toBeCalledTimes(3);
   });
 
@@ -56,7 +58,7 @@ describe("test retry function", () => {
     const retryTimes = 2;
 
     await expect(() =>
-      retry(retryFn, { logRetry: false, retryTimes, onError, onRetryError })
+      retry(retryFn, { logRetry: false, retryTimes, onError, onRetryError }),
     ).rejects.toEqual(new Error("Error"));
 
     expect(retryFn).toBeCalledTimes(retryTimes);
@@ -75,7 +77,7 @@ describe("test retry function", () => {
     });
 
     await expect(() =>
-      retry(retryFn, { logRetry: false, retryTimes: 2, onRetryError })
+      retry(retryFn, { logRetry: false, retryTimes: 2, onRetryError }),
     ).rejects.toEqual({
       status: 404,
     });
