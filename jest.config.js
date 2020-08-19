@@ -1,3 +1,5 @@
+const ignoreFile = ["src/index.ts"];
+
 module.exports = {
   preset: "ts-jest",
   automock: false,
@@ -5,7 +7,7 @@ module.exports = {
   collectCoverage: true,
   collectCoverageFrom: ["**/src/**/*.ts"],
   coverageDirectory: "coverage/",
-  coveragePathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/node_modules/"],
+  coveragePathIgnorePatterns: ["<rootDir>/dist/", "<rootDir>/node_modules/", ...ignoreFile],
   globals: {
     "ts-jest": {
       tsConfig: "tsconfig.json",
@@ -22,5 +24,5 @@ module.exports = {
     // "**/tests/**/*.+(ts|tsx|js)",
     "**/?(*.)+(spec|test).+(ts|tsx|js)",
   ],
-  testPathIgnorePatterns: ["dist/", "node_modules/", "types/"],
+  testPathIgnorePatterns: ["dist/", "node_modules/", "types/", "test/test.test.ts"],
 };
